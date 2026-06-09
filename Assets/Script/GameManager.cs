@@ -4,6 +4,7 @@ using System.IO;
 using Unity.Burst.CompilerServices;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.TerrainUtils;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,14 +12,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject BlackCell;
     [SerializeField] private GameObject StartCell;
     [SerializeField] private List<GameObject> pieces;
+    Color whiteClr;
+    Color blackClr;
     private GameObject[] Tiles;
     GameObject selected;
     Tile selectedTile;
+    Color selectedColour = Color.gray;
     // Start is called before the first frame update
     void Start()
     {
         BuildBoard();
         Tiles = GameObject.FindGameObjectsWithTag("Tile");
+        whiteClr = WhiteCell.GetComponent<SpriteRenderer>().color;
+        blackClr = BlackCell.GetComponent<SpriteRenderer>().color;
     }
 
     // Update is called once per frame
@@ -97,6 +103,8 @@ public class GameManager : MonoBehaviour
             {
                 selected = tile.getPiece();
                 selectedTile = tile;
+                selectedColour = selected.GetComponent<SpriteRenderer>().color;
+                dimSelection();
             }
         }
         else if (tile.getPiece() == null && selected != null)
@@ -106,6 +114,7 @@ public class GameManager : MonoBehaviour
                 selectedTile.place(null);
                 tile.place(selected);
             }
+            selected.GetComponent<SpriteRenderer>().color = selectedColour;
             selected = null;
             selectedTile = null;
         }
@@ -118,14 +127,21 @@ public class GameManager : MonoBehaviour
                 selectedTile.place(null);
                 tile.place(selected);
             }
+            selected.GetComponent<SpriteRenderer>().color = selectedColour;
             selected = null;
             selectedTile = null;
         }
         else
         {
+            selected.GetComponent<SpriteRenderer>().color = selectedColour;
             selected = null;
             selectedTile = null;
         }
             Debug.Log($"Tile Clicked: {tile.getPos()}");
+    }
+
+    void dimSelection()
+    {
+        selected.GetComponent<SpriteRenderer>().color = new Color(selectedColour.r - 0.3f, selectedColour.g - 0.3f, selectedColour.b - 0.3f);
     }
 }
